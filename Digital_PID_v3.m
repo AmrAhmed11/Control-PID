@@ -595,6 +595,9 @@ sys = tf(c_D.Numerator ,c_D.Denominator ,Ts);
 Syp = bodeplot(sys);
 options = getoptions(Syp);
 options.Title.String = 'Syp';
+options.FreqScale = 'linear';
+options.FreqUnits = 'Hz';
+options.Grid = 'on';
 setoptions(Syp,options);
 
 subplot(1,2,2);
@@ -602,6 +605,9 @@ sys = tf(U_r.Numerator ,U_r.Denominator ,Ts);
 Sup = bodeplot(sys);
 options = getoptions(Sup);
 options.Title.String = 'Sup';
+options.FreqScale = 'linear';
+options.FreqUnits = 'Hz';
+options.Grid = 'on';
 setoptions(Sup,options);
 
 set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 1 1]);
