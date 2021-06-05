@@ -515,7 +515,7 @@ set(handles.edit7, 'string',['[' num2str(P) ']']);
 BW=max([BW w0]);%rad/s
 set(handles.figure1, 'NumberTitle','off', 'Name',sprintf('Digital PID v3. Nyquist period=%fs.', pi/BW));%%
 
-function [c_r c_D U_r U_D]=calculate_CLTFs(B, A, R, S, T)%r reference, c plant output, U control signal, D disturbance
+function [c_r c_D U_r U_D AS AR den]=calculate_CLTFs(B, A, R, S, T)%r reference, c plant output, U control signal, D disturbance
 %TRANSFER FUNCTIONS
 %c/r=TB/(AS+BR)
 %c/D=AS/(AS+BR)
@@ -533,6 +533,10 @@ else
     end
 end
 den=AS+BR;
+AR = filt(conv(A, -R));
+figure
+sys = tf(AS,den,5);
+bodeplot(sys);
 
 %'c(z)/r(z):'
 c_r=minreal(filt(conv(T, B), den));
@@ -570,7 +574,7 @@ X=res_ref-0.25*res_dist;%disturbance is a negative quarter-step
 %set(axes, 'XMinorGrid','on', 'YMinorGrid','on', 'title',sprintf('%s, disturbance at %g s', title, t_dist*Ts));%CRASH: Value must be a handle
 %set(axes, 'XMinorGrid','on', 'YMinorGrid','on');
 
-function plot_responses(c_r, c_D, U_r, U_D, Ts, handles)
+function plot_responses(c_r, c_D, U_r, U_D, Ts, AS, AR, den, handles)
 %RESPONSE PLOTS
 sim_time=100; t_ref=5; t_dist=50;
 
@@ -591,15 +595,15 @@ title(handles.axes2, sprintf('Control signal, step disturbance at %g s', t_dist*
 
 figure
 subplot(1,2,1);
-sys = tf(c_D.Numerator ,c_D.Denominator ,Ts);
+sys = tf(AS,den,Ts);
 Syp = bodeplot(sys);
 options = getoptions(Syp);
 options.Title.String = 'Syp';
 setoptions(Syp,options);
 
 subplot(1,2,2);
-sys = tf(U_r.Numerator ,U_r.Denominator ,Ts);
-Sup = bodeplot(sys);
+sys1 
+Sup = bodeplot(A);
 options = getoptions(Sup);
 options.Title.String = 'Sup';
 setoptions(Sup,options);
@@ -656,10 +660,10 @@ set(handles.edit10, 'string',['[' num2str(T) ']']);
 %set(handles.edit9, 'string',['S = [' num2str(S) ']']);
 %set(handles.edit10, 'string',['T = [' num2str(T) ']']);
 
-[c_r c_D U_r U_D]=calculate_CLTFs(Bp, Ap, R, S, T);
+[c_r c_D U_r U_D AS AR den]=calculate_CLTFs(Bp, Ap, R, S, T);
 
 %syp=(A*S)/(A*S+B*R)
-plot_responses(c_r, c_D, U_r, U_D, Ts, handles);
+plot_responses(c_r, c_D, U_r, U_D, Ts,AS,AR,den, handles);
 
 
 
@@ -680,7 +684,7 @@ R=str2num(get(handles.edit8, 'string'));
 S=str2num(get(handles.edit9, 'string'));
 T=str2num(get(handles.edit10, 'string'));
 
-[c_r c_D U_r U_D]=calculate_CLTFs(Bp, Ap, R, S, T);
+[c_r c_D U_r U_D AS AR den]=calculate_CLTFs(Bp, Ap, R, S, T);
 plot_responses(c_r, c_D, U_r, U_D, Ts, AS, AR, den, handles);
 
 
