@@ -636,7 +636,7 @@ setoptions(Syp,options);
 
 
 % subplot(1,2,2);
-sys = tf(U_r.Numerator ,U_r.Denominator ,Ts);
+sys = tf(U_D.Numerator ,U_D.Denominator ,Ts);
 axes(handles.axes6);
 if(value == 0)
      hold off;
@@ -795,11 +795,11 @@ function Show_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 [Bp Ap P Ts]=acquire_data(handles);
 [h, f] = freqz(1, [1 -1], 2001, 'whole', 1/Ts);
-f=f(1:1000);
-h=h(1:1000);
-v = repelem(6, 1000);
+f=f(1:1275);
+h=h(1:1275);
+v = repelem(6, 1275);
 hold(handles.axes5, 'on');
-plot(handles.axes5, f(335:1000)*Ts,20*log10(abs(1-abs(h(335:1000)))), '-');
+plot(handles.axes5, f(335:1275)*Ts,20*log10(abs(1-abs(h(335:1275)))), '-');
 plot(handles.axes5, f*Ts,min(20*log10(abs(1+abs(h))), v), '-');
 ylim(handles.axes5, [-40, 10]);
 hold(handles.axes5, 'off');
