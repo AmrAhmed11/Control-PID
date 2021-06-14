@@ -22,7 +22,7 @@ function varargout = Digital_PID_v3(varargin)
 
 % Edit the above text to modify the response to help Digital_PID_v3
 
-% Last Modified by GUIDE v2.5 26-May-2021 14:12:24
+% Last Modified by GUIDE v2.5 14-Jun-2021 20:17:27
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -57,6 +57,7 @@ handles.output = hObject;
 
 % Update handles structure
 guidata(hObject, handles);
+
 
 % UIWAIT makes Digital_PID_v3 wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
@@ -507,8 +508,10 @@ alpha2 = str2num(get(handles.edit15,'String'));
 pole1 = [1 -alpha1];
 pole2 = [1 -alpha2];
 P=z_polynomial(w0, zeta, Ts);
-pole=conv(pole1,pole2);
-P=conv(P,pole);
+if(size(num)>2)
+pole1 = conv(pole1,pole2);
+end
+P=conv(P,pole1);
 %V4
 
 set(handles.edit7, 'string',['[' num2str(P) ']']);
@@ -578,31 +581,85 @@ sim_time=100; t_ref=5; t_dist=50;
 reference=ones(ref_size);
 reference=padarray(reference, t_ref, 0, 'pre');
 %stairs(handles.axes1, t,PlantOutput);
+value = get(handles.hold, 'Value');
+axes(handles.axes1);
+if(value == 1)
+    hold on;
+else
+    hold off;
+end
 plot(handles.axes1, t,reference,'.', t,PlantOutput,'o');
 set(handles.axes1, 'XMinorGrid','on', 'YMinorGrid','on');
 title(handles.axes1, sprintf('Plant output, step disturbance at %g s', t_dist*Ts));
 
 [t ControlSignal ref_size]=sim_response(sim_time, t_ref, t_dist, U_r, U_D, Ts, 'Control signal', handles.axes2);
 %stairs(handles.axes2, t,ControlSignal);
+axes(handles.axes2);
+if(value == 1)
+    hold on;
+else
+    hold off;
+end
 plot(handles.axes2, t,ControlSignal,'o');
 set(handles.axes2, 'XMinorGrid','on', 'YMinorGrid','on');
 title(handles.axes2, sprintf('Control signal, step disturbance at %g s', t_dist*Ts));
 
 
-figure
-subplot(1,2,1);
+% figure
+% subplot(1,2,1);
 sys = tf(c_D.Numerator ,c_D.Denominator ,Ts);
+axes(handles.axes5);
+if(value == 0)
+    hold off;
+elseif(value == 1)
+    hold on;
+end
+bodemag(sys);
+
+[h, f] = freqz(1, [1 -1], 2001, 'whole', 1/Ts);
+f = f(1:1000);
+h = h(1:1000);
+v = repelem(6, 1000);
+
+show = get(handles.show,'Value');
+if( show==1)
+    hold(handles.axes5, 'on');
+    plot(handles.axes5, f(335:1000)*Ts,20*log10(abs(1-abs(h(335:1000)))), '-');
+    plot(handles.axes5, f*Ts,min(20*log10(abs(1+abs(h))), v), '-');
+    ylim(handles.axes5, [-40, 10]);
+    hold(handles.axes5, 'off');
+end
+
+
+
+
+axes(handles.axes9);
+if(value == 0)
+    hold off;
+elseif(value == 1)
+    hold on;
+end
 Syp = bodeplot(sys);
+
 options = getoptions(Syp);
+options.MagVisible = 'off';
 options.Title.String = 'Syp';
 options.FreqScale = 'linear';
 options.FreqUnits = 'Hz';
 options.Grid = 'on';
 setoptions(Syp,options);
 
-subplot(1,2,2);
+
+% subplot(1,2,2);
 sys = tf(U_r.Numerator ,U_r.Denominator ,Ts);
+axes(handles.axes6);
+if(value == 0)
+     hold off;
+elseif(value == 1)
+     hold on;
+end
 Sup = bodeplot(sys);
+
 options = getoptions(Sup);
 options.Title.String = 'Sup';
 options.FreqScale = 'linear';
@@ -687,7 +744,7 @@ S=str2num(get(handles.edit9, 'string'));
 T=str2num(get(handles.edit10, 'string'));
 
 [c_r c_D U_r U_D]=calculate_CLTFs(Bp, Ap, R, S, T);
-plot_responses(c_r, c_D, U_r, U_D, Ts, AS, AR, den, handles);
+plot_responses(c_r, c_D, U_r, U_D, Ts, handles);
 
 
 
@@ -735,3 +792,21 @@ function edit15_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on button press in hold.
+function hold_Callback(hObject, eventdata, handles)
+% hObject    handle to hold (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of hold
+
+
+% --- Executes on button press in show.
+function show_Callback(hObject, eventdata, handles)
+% hObject    handle to show (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of show

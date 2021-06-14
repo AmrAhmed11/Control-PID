@@ -22,7 +22,7 @@ function varargout = RST_PP_ID(varargin)
 
 % Edit the above text to modify the response to help RST_PP_ID
 
-% Last Modified by GUIDE v2.5 17-May-2010 19:46:44
+% Last Modified by GUIDE v2.5 14-Jun-2021 19:15:00
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -1024,14 +1024,3 @@ B=padarray(B', tfunc.ioDelay, 0, 'pre')';
 set(handles.checkbox1, 'value',0);%continuous plant
 set(handles.edit5, 'string',['[' num2str(B) ']']);%Bp(z)
 set(handles.edit6, 'string',['[' num2str(A) ']']);%Ap(z)
-
-
-
-
-
-
-
-
-
-
-
