@@ -22,7 +22,7 @@ function varargout = RST_PP_ID(varargin)
 
 % Edit the above text to modify the response to help RST_PP_ID
 
-% Last Modified by GUIDE v2.5 14-Jun-2021 19:15:00
+% Last Modified by GUIDE v2.5 14-Jun-2021 21:22:39
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -763,6 +763,57 @@ U_D=minreal(filt(conv(A, -R), den));
 D=filt(1, dist);
 
 %RESPONSE PLOTS
+
+
+value = get(handles.HOLD, 'Value');
+% figure
+% subplot(1,2,1);
+sys = tf(c_D.Numerator ,c_D.Denominator ,Ts);
+axes(handles.axes3);
+if(value == 0)
+    hold off;
+elseif(value == 1)
+    hold on;
+end
+bodemag(sys);
+
+axes(handles.axes4);
+if(value == 0)
+    hold off;
+elseif(value == 1)
+    hold on;
+end
+Syp = bodeplot(sys);
+
+options = getoptions(Syp);
+options.MagVisible = 'off';
+options.Title.String = '';
+options.FreqScale = 'linear';
+options.FreqUnits = 'Hz';
+options.Grid = 'on';
+setoptions(Syp,options);
+
+
+% subplot(1,2,2);
+sys = tf(U_r.Numerator ,U_r.Denominator ,Ts);
+axes(handles.axes5);
+if(value == 0)
+     hold off;
+elseif(value == 1)
+     hold on;
+end
+Sup = bodeplot(sys);
+
+options = getoptions(Sup);
+options.Title.String = 'Sup';
+options.FreqScale = 'linear';
+options.FreqUnits = 'Hz';
+options.Grid = 'on';
+setoptions(Sup,options);
+
+
+
+
 sim_time=100; t_ref=5; t_dist=50;
 
 continuous_curve=get(handles.checkbox4, 'value');
@@ -1024,3 +1075,12 @@ B=padarray(B', tfunc.ioDelay, 0, 'pre')';
 set(handles.checkbox1, 'value',0);%continuous plant
 set(handles.edit5, 'string',['[' num2str(B) ']']);%Bp(z)
 set(handles.edit6, 'string',['[' num2str(A) ']']);%Ap(z)
+
+
+% --- Executes on button press in HOLD.
+function HOLD_Callback(hObject, eventdata, handles)
+% hObject    handle to HOLD (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of HOLD

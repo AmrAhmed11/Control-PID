@@ -22,7 +22,7 @@ function varargout = Digital_PID_v3(varargin)
 
 % Edit the above text to modify the response to help Digital_PID_v3
 
-% Last Modified by GUIDE v2.5 14-Jun-2021 20:17:27
+% Last Modified by GUIDE v2.5 14-Jun-2021 20:41:25
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -616,21 +616,6 @@ elseif(value == 1)
 end
 bodemag(sys);
 
-[h, f] = freqz(1, [1 -1], 2001, 'whole', 1/Ts);
-f = f(1:1000);
-h = h(1:1000);
-v = repelem(6, 1000);
-
-show = get(handles.show,'Value');
-if( show==1)
-    hold(handles.axes5, 'on');
-    plot(handles.axes5, f(335:1000)*Ts,20*log10(abs(1-abs(h(335:1000)))), '-');
-    plot(handles.axes5, f*Ts,min(20*log10(abs(1+abs(h))), v), '-');
-    ylim(handles.axes5, [-40, 10]);
-    hold(handles.axes5, 'off');
-end
-
-
 
 
 axes(handles.axes9);
@@ -803,10 +788,20 @@ function hold_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of hold
 
 
-% --- Executes on button press in show.
-function show_Callback(hObject, eventdata, handles)
-% hObject    handle to show (see GCBO)
+% --- Executes on button press in Show.
+function Show_Callback(hObject, eventdata, handles)
+% hObject    handle to Show (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+[Bp Ap P Ts]=acquire_data(handles);
+[h, f] = freqz(1, [1 -1], 2001, 'whole', 1/Ts);
+f=f(1:1000);
+h=h(1:1000);
+v = repelem(6, 1000);
+hold(handles.axes5, 'on');
+plot(handles.axes5, f(335:1000)*Ts,20*log10(abs(1-abs(h(335:1000)))), '-');
+plot(handles.axes5, f*Ts,min(20*log10(abs(1+abs(h))), v), '-');
+ylim(handles.axes5, [-40, 10]);
+hold(handles.axes5, 'off');
 
-% Hint: get(hObject,'Value') returns toggle state of show
+
