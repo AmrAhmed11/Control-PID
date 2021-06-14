@@ -775,8 +775,9 @@ if(value == 0)
 elseif(value == 1)
     hold on;
 end
-bodemag(sys);
 
+bodemag(sys);
+title('Syp');
 axes(handles.axes4);
 if(value == 0)
     hold off;

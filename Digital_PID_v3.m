@@ -615,7 +615,7 @@ elseif(value == 1)
     hold on;
 end
 bodemag(sys);
-
+title('Syp');
 
 
 axes(handles.axes9);
@@ -628,7 +628,7 @@ Syp = bodeplot(sys);
 
 options = getoptions(Syp);
 options.MagVisible = 'off';
-options.Title.String = 'Syp';
+options.Title.String = '';
 options.FreqScale = 'linear';
 options.FreqUnits = 'Hz';
 options.Grid = 'on';
